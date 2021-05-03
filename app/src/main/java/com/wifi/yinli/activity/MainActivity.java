@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
             if (Build.VERSION.SDK_INT > 25) {
                 RootCmd.execRootCmd(Build.VERSION.SDK_INT >= 30 ? "cp /data/misc/apexdata/com.android.wifi/WifiConfigStore.xml " + getExternalCacheDir().getPath() : "cp /data/misc/wifi/WifiConfigStore.xml " + getExternalCacheDir().getPath());
                 setTxt(getTxt(getExternalCacheDir().getPath() + "/" + "WifiConfigStore.xml").replace("<null name=\"PreSharedKey\" />", "<string name=\"PreSharedKey\">&quot;无密码&quot;</string>"), getExternalCacheDir().getPath() + "/" + "WifiConfigStore.xml");
-                InputStream stream = new FileInputStream(new File(getExternalCacheDir().getPath() + "/WifiConfigStore.xml"));
+                InputStream stream = new FileInputStream(new File(getExternalCacheDir().getPath() + "/" + "WifiConfigStore.xml"));
                 getXml(stream);
             } else {
                 getConf(RootCmd.execRootCmd("cat /data/misc/wifi/*.conf"));
