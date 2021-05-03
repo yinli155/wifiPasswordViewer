@@ -1,22 +1,26 @@
 package com.wifi.yinli.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.ClipboardManager;
 import android.util.Xml;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import com.google.android.material.snackbar.Snackbar;
 import com.wifi.yinli.R;
 import com.wifi.yinli.utils.RootCmd;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
@@ -28,14 +32,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
-import com.google.android.material.snackbar.Snackbar;
-<<<<<<< HEAD
-import java.io.FileOutputStream;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.content.Intent;
-=======
->>>>>>> 9b9bf754f025e235bf4b6004ca4831e93f1b9ef0
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,22 +39,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
-<<<<<<< HEAD
 		super.onCreate(savedInstanceState);
-=======
-	super.onCreate(savedInstanceState);
->>>>>>> 9b9bf754f025e235bf4b6004ca4831e93f1b9ef0
         setContentView(R.layout.activity_main);
         listview = findViewById(R.id.activitymainListView1);
         try {
             if (Build.VERSION.SDK_INT > 25) {
                 RootCmd.execRootCmd(Build.VERSION.SDK_INT >= 30 ? "cp /data/misc/apexdata/com.android.wifi/WifiConfigStore.xml " + getExternalCacheDir().getPath() : "cp /data/misc/wifi/WifiConfigStore.xml " + getExternalCacheDir().getPath());
-<<<<<<< HEAD
                 setTxt(getTxt(getExternalCacheDir().getPath() + "/" + "WifiConfigStore.xml").replace("<null name=\"PreSharedKey\" />", "<string name=\"PreSharedKey\">&quot;无密码&quot;</string>"), getExternalCacheDir().getPath() + "/" + "WifiConfigStore.xml");
-                InputStream stream = new FileInputStream(new File(getExternalCacheDir().getPath() + "/" + "WifiConfigStore.xml"));
-=======
                 InputStream stream = new FileInputStream(new File(getExternalCacheDir().getPath() + "/WifiConfigStore.xml"));
->>>>>>> 9b9bf754f025e235bf4b6004ca4831e93f1b9ef0
                 getXml(stream);
             } else {
                 getConf(RootCmd.execRootCmd("cat /data/misc/wifi/*.conf"));
@@ -89,16 +77,15 @@ public class MainActivity extends AppCompatActivity {
                     Map<String, String> map = list.get(p3);
                     ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                     cm.setText(map.get("truekey"));
-<<<<<<< HEAD
                     if (map.get("truekey").equals("无密码")) {
                         Snackbar.make(findViewById(android.R.id.content), "这个WiFi不需要密码", 3000).show();
                     } else {
                         Snackbar.make(findViewById(android.R.id.content), "已复制 < " +  map.get("name").replace("WiFi名称:", "") + " > 的密码", 3000).show();
                     }
 
-=======
+
                     Snackbar.make(findViewById(android.R.id.content), "已复制" +  map.get("name") + "的密码", Snackbar.LENGTH_SHORT).show();
->>>>>>> 9b9bf754f025e235bf4b6004ca4831e93f1b9ef0
+
                 }
             });
         if (list.size() == 0) {
@@ -187,7 +174,6 @@ public class MainActivity extends AppCompatActivity {
         }
         initShow(arrayList);
 
-<<<<<<< HEAD
     }
     private void setTxt(String text, String inname) {
         try {
@@ -197,8 +183,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
 
         }
-=======
->>>>>>> 9b9bf754f025e235bf4b6004ca4831e93f1b9ef0
     }
     private String getTxt(String filename) {
         String result = "";
