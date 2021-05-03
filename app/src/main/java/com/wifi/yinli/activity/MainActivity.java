@@ -82,10 +82,6 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         Snackbar.make(findViewById(android.R.id.content), "已复制 < " +  map.get("name").replace("WiFi名称:", "") + " > 的密码", 3000).show();
                     }
-
-
-                    Snackbar.make(findViewById(android.R.id.content), "已复制" +  map.get("name") + "的密码", Snackbar.LENGTH_SHORT).show();
-
                 }
             });
         if (list.size() == 0) {
