@@ -1,26 +1,22 @@
 package com.wifi.yinli.activity;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.ClipboardManager;
 import android.util.Xml;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import com.google.android.material.snackbar.Snackbar;
 import com.wifi.yinli.R;
 import com.wifi.yinli.utils.RootCmd;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
@@ -32,6 +28,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import com.google.android.material.snackbar.Snackbar;
+import java.io.FileOutputStream;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.content.Intent;
+import java.io.UnsupportedEncodingException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
             if (Build.VERSION.SDK_INT > 25) {
                 RootCmd.execRootCmd(Build.VERSION.SDK_INT >= 30 ? "cp /data/misc/apexdata/com.android.wifi/WifiConfigStore.xml " + getExternalCacheDir().getPath() : "cp /data/misc/wifi/WifiConfigStore.xml " + getExternalCacheDir().getPath());
                 setTxt(getTxt(getExternalCacheDir().getPath() + "/" + "WifiConfigStore.xml").replace("<null name=\"PreSharedKey\" />", "<string name=\"PreSharedKey\">&quot;无密码&quot;</string>"), getExternalCacheDir().getPath() + "/" + "WifiConfigStore.xml");
-                InputStream stream = new FileInputStream(new File(getExternalCacheDir().getPath() + "/WifiConfigStore.xml"));
+                InputStream stream = new FileInputStream(new File(getExternalCacheDir().getPath() + "/" + "WifiConfigStore.xml"));
                 getXml(stream);
             } else {
                 getConf(RootCmd.execRootCmd("cat /data/misc/wifi/*.conf"));
@@ -82,10 +84,6 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         Snackbar.make(findViewById(android.R.id.content), "已复制 < " +  map.get("name").replace("WiFi名称:", "") + " > 的密码", 3000).show();
                     }
-
-
-                    Snackbar.make(findViewById(android.R.id.content), "已复制" +  map.get("name") + "的密码", Snackbar.LENGTH_SHORT).show();
-
                 }
             });
         if (list.size() == 0) {
@@ -98,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private void getConf(String str) {
-        ArrayList arrayList = new ArrayList();
+        ArrayList<Map<String,String>> arrayList = new ArrayList<Map<String,String>>();
         Matcher matcher = Pattern.compile("network=\\{([^\\}]+)\\}", 32).matcher(str);
         while (matcher.find()) {
             String group = matcher.group();
@@ -128,12 +126,16 @@ public class MainActivity extends AppCompatActivity {
         initShow(arrayList);
     }
     private String getSSID(String str) {
-        String decode = URLDecoder.decode(str.substring(str.indexOf("configKey") + 9, str.lastIndexOf("-")));
-        String substring = decode.substring(5, decode.length());
-        return substring.substring(0, substring.length() - 2);
+        try {
+            String decode = URLDecoder.decode(str.substring(str.indexOf("configKey") + 9, str.lastIndexOf("-")), "utf-8");
+            String substring = decode.substring(5, decode.length());
+            return substring.substring(0, substring.length() - 2);
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
     }
     private void getXml(InputStream is) throws XmlPullParserException, FileNotFoundException, IOException {
-        ArrayList arrayList = new ArrayList();
+        ArrayList<Map<String,String>> arrayList = new ArrayList<Map<String,String>>();
         HashMap<String, String> hashMap = new HashMap<String, String>();
         XmlPullParser newPullParser = Xml.newPullParser();
         newPullParser.setInput(is, "utf-8");
@@ -142,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
             switch (eventType) {
                 case 2:
                     if ("string".equals(name)) {
-                        if ("SSID".equals(newPullParser.getAttributeValue((String) null, "name"))) {
+                        if ("SSID".equals(newPullParser.getAttributeValue(null, "name"))) {
                             newPullParser.next();
                             String trim = newPullParser.getText().trim();
                             hashMap.put("name", String.format("WiFi名称:%s", new Object[]{trim.substring(1, trim.length() - 1)}));
@@ -151,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
                                 hashMap = new HashMap<String, String>();
                             }
                         }
-                        if (!"PreSharedKey".equals(newPullParser.getAttributeValue((String) null, "name"))) {
+                        if (!"PreSharedKey".equals(newPullParser.getAttributeValue(null, "name"))) {
                             break;
                         } else {
                             newPullParser.next();

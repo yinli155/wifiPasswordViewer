@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import android.util.Log;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
 
 /**
  * Android运行linux命令
@@ -33,7 +35,8 @@ public final class RootCmd {
      * 执行命令并且输出结果
      */
     public static String execRootCmd(String cmd) {
-        String result = "";
+
+        StringBuffer sbf= new StringBuffer();
         DataOutputStream dos = null;
         DataInputStream dis = null;
 
@@ -47,12 +50,19 @@ public final class RootCmd {
             dos.flush();
             dos.writeBytes("exit\n");
             dos.flush();
+            InputStreamReader iSR = new InputStreamReader(
+                dis, "UTF-8");
+            BufferedReader bfR = new BufferedReader(iSR);
             String line = null;
-            while ((line = dis.readLine()) != null) {
+
+            while ((line = bfR.readLine()) != null) {
                 Log.d("result", line);
-                result += line;
+                sbf.append(line);
             }
+            bfR.close();
+            iSR.close();
             p.waitFor();
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -71,7 +81,7 @@ public final class RootCmd {
                 }
             }
         }
-        return result;
+        return sbf.toString();
     }
 
     /**
